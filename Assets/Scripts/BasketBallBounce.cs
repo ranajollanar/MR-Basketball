@@ -4,16 +4,17 @@ using UnityEngine;
 public class BasketballBounce : MonoBehaviour
 {
     [Header("Bounce Settings")]
-    public float bounceFactor = 0.8f; // Determines energy retained (0-1, where 1 is full retention)
+    [Range(0, 1)] public float bounceFactor = 0.8f; // Determines energy retained (0-1, where 1 is full retention)
     public float gravityScale = 1.0f; // Scales gravity applied to the ball
     public float minimumBounceVelocity = 0.1f; // Minimum velocity to stop bouncing
-
+    [SerializeField] private AudioSource bounceSound;
     private Rigidbody rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false; // We'll apply custom gravity
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous; // Better collision handling for fast-moving objects
     }
 
     void FixedUpdate()
@@ -25,6 +26,7 @@ public class BasketballBounce : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        bounceSound.Play();
         // Calculate the bounce only if the collision has enough impact velocity
         if (collision.relativeVelocity.magnitude > minimumBounceVelocity)
         {

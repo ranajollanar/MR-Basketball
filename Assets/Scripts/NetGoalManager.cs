@@ -1,47 +1,34 @@
+using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class NetGoalManager : MonoBehaviour
 {
-    public int currentLevel = 0; // Tracks the current level the ball is passing
+    [SerializeField] private AudioSource goalAudio;
+    public int score = 0;
+    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private GameObject messageText;
 
-    private void Update()
+    private void Start()
     {
-        if (currentLevel == 3)
+        scoreText.text = score.ToString();
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Ball"))
         {
-            Debug.Log("Goal Scored!");
-            ResetProgress(); // Reset for the next attempt
+            goalAudio.Play();
+            score += 1;
+            scoreText.text = score.ToString();
+            messageText.SetActive(true);
+            Wait();
+            messageText.SetActive(false);
         }
     }
 
-    private IEnumerator CheckForWins()
+    IEnumerator Wait()
     {
-        // Wait for 1 second
-        yield return new WaitForSeconds(10f);
-
-        // Check the level status after the delay
-        if (currentLevel <= 2)
-        {
-            Debug.Log("Failed to score, resetting progress.");
-            ResetProgress();
-        }
-        else if (currentLevel == 3)
-        {
-            Debug.Log("Goal Scored!");
-            ResetProgress(); // Reset for the next attempt
-        }
-    }
-
-    private void ResetProgress()
-    {
-        // Reset the progress tracking variable
-        currentLevel = 0;
-        Debug.Log("Progress Reset!");
-    }
-
-    public void TriggerWinCheck()
-    {
-        // Start the coroutine to check for a win condition
-        StartCoroutine(CheckForWins());
+        yield return new WaitForSeconds(0.5f);
     }
 }
